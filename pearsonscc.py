@@ -1,21 +1,14 @@
-# mean function for list
+# mean function for list, mean of x
 def mean(x):
-    """
-    mean(x)
-    Returns the mean of x.
-    """
     # calculate the sum of x
     sum_x = sum(x)
     # calculate the mean of x
     mean_x = sum_x / len(x)
     return mean_x
 
-# pearson correlation coefficient test function
+# pearson correlation coefficient test function, returns the pearson correlation coefficient (r) of x and y
 def pearson_correlation_coefficient(x, y):
-    """
-    pearson_correlation_coefficient(x, y)
-    Returns the Pearson correlation coefficient of x and y.
-    """
+    
     # check if x and y are of same length
     if len(x) != len(y):
         raise ValueError("The length of x and y must be the same.")
@@ -39,7 +32,7 @@ def pearson_correlation_coefficient(x, y):
         denominator_y += (y[i] - y_mean) ** 2
     denominator = (denominator_x * denominator_y) ** (1 / 2)
 
-    # calculate the pearson correlation coefficient
+    # calculate the pearson correlation coefficient, r
     r = numerator / denominator
     return r
 
