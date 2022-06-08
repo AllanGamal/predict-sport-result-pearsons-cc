@@ -19,6 +19,8 @@ def team_stats_table(tags, team):# find the spicific player stats table for the 
             break
     return table_tag
 
+
+
 def n_rows(children): # find the number of rows in the table
     count = 0
     for child in children:
@@ -89,26 +91,50 @@ def add_object(stats_tag, list):
                 print(p1.att)
                 print('\n')
 
-add_object(player_stats, play_att_list)
-                
+# add_object(player_stats, play_att_list)
+
+url_team = 'https://fbref.com/en/comps/11/schedule/Serie-A-Scores-and-Fixtures'
+
+# check teams
+def win_loss2(url):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, 'html.parser')
+    tags = soup.find('caption')
+    tag = tags.find_next('tbody')
+    table = tag.findNext("tr")
+    squad_a = ''
+    squad_b = ''
+    for tabl in table:
+        if "squad_a" in str(tabl):
+            squad_a=tabl.text
+        if "squad_b" in str(tabl):
+            squad_b=tabl.text
+    print(squad_a + '\n' + squad_b)
+    # print next line
+    print('\n')
+
+def win_loss(url):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, 'html.parser')
+    tags = soup.find('caption')
+    tag = tags.find_next('tbody')
+    table = tag.findNext("tr")
+    for tabl in table:
+        if "squad_a" in str(tabl):
+            if "bold" in str(tabl):
+                return 1
             
-        
-    
-'''   
-for volume in player_stats:
-    test = volume.parent
-    for testy in play_att_list:
-        
-            if testy in str(test):
-                play_att_list.remove(testy)
-    
-    if "crosses" in str(test):
-        abc = float(test.find_all('td', {"data-stat": "crosses"})[0:999999].text)
-        print(abc)
-'''
-    
+        if "squad_b" in str(tabl):
+            if "bold" in str(tabl):
+                return 2
+            
+    return 0
+    print(squad_a + '\n' + squad_b)
+    # print next line
+    print('\n')
 
 
+print(win_loss(url_team))
 
 
 # function that checks how many times a class of html tag with the tag value is found in the html
@@ -122,4 +148,4 @@ def check_html_tag_n(url, element, tag, team, row):
     # find the player stats table for the specific team
     caption_tag = team_stats_table(tags, team) 
     table_tag = caption_tag.findNext('tbody') 
-    # go to the third row of children
+
