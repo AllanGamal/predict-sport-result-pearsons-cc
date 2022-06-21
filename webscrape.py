@@ -113,13 +113,29 @@ def win_loss2(url):
     # print next line
     print('\n')
 
-def win_loss(url):
+
+def get_game_tag(url): # get the game tag
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
     tags = soup.find('caption')
     tag = tags.find_next('tbody')
-    table = tag.findNext("tr")
-    for tabl in table:
+    
+    return tag
+  
+    while tag:
+        if not tag.get("class"):
+            print(tag.text)
+        tag = tag.findNext("tr")
+            # get the team names
+        
+#print(get_game_tag(url_team))
+
+def win_loss(tag): # return winner/loser
+    
+    tag = tag.findNext("tr")
+
+    for tabl in tag:
+        
         if "squad_a" in str(tabl):
             if "bold" in str(tabl):
                 return 1
@@ -129,12 +145,20 @@ def win_loss(url):
                 return 2
             
     return 0
-    print(squad_a + '\n' + squad_b)
-    # print next line
-    print('\n')
+#print(win_loss(get_game_tag(url_team)))
+
+def get_game_link(tag): # get the link to the game
+    tag_link = tag.find_all_next('td', {"data-stat": 'score'})[0]
+    # return the link
+    return "https://fbref.com/" + str(tag_link.find_all_next('a')[0].get('href'))   
+
+print(get_game_link(get_game_tag(url_team)))
 
 
-print(win_loss(url_team))
+
+
+
+
 
 
 # function that checks how many times a class of html tag with the tag value is found in the html
@@ -148,4 +172,5 @@ def check_html_tag_n(url, element, tag, team, row):
     # find the player stats table for the specific team
     caption_tag = team_stats_table(tags, team) 
     table_tag = caption_tag.findNext('tbody') 
+    
 
