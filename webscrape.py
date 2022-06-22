@@ -103,7 +103,42 @@ def add_object(stats_tag, list):
                 print('\n')
                 templist.remove(att)
 
-add_object(player_stats, play_att_list)
+#add_object(player_stats, play_att_list)
+
+def check_n_players(url, element, team):
+    # get the html
+    html = requests.get(url)
+    # parse the html
+    soup = BeautifulSoup(html.text, 'html.parser')
+    # find the tag
+    tags = soup.findAll(element)
+    
+    # find the player stats table for the specific team
+    caption_tag = team_stats_table(tags, team) 
+    print(caption_tag)
+    table_tag = caption_tag.findNext('tbody') 
+
+    player = table_tag.findChildren("tr")
+    
+
+    n_players = n_rows(player) # find the number of players in the table of a team
+    return n_players
+test = check_n_players(url, 'caption', 'Sassuolo')
+print(test)
+
+def collect_game_data(stats_tag, list, url, win, loss):
+    n_players = check_n_players(url, 'caption', 'Sassuolo')
+    if stats_tag == 0:
+        return 0
+    for stat in stats_tag:
+        # make an object from webscrape.py
+        raw_stats = stat.parent
+        name = raw_stats.find('th').get('csk')
+        print(name)
+    templist = list
+
+    
+collect_game_data(player_stats, play_att_list, url, 0, 0)
 
 url_team = 'https://fbref.com/en/comps/11/schedule/Serie-A-Scores-and-Fixtures'
 
@@ -134,11 +169,6 @@ def get_game_tag(url): # get the game tag
     
     return tag
   
-    while tag:
-        if not tag.get("class"):
-            print(tag.text)
-        tag = tag.findNext("tr")
-            # get the team names
         
 #print(get_game_tag(url_team))
 
@@ -159,12 +189,18 @@ def win_loss(tag): # return winner/loser
     return 0
 #print(win_loss(get_game_tag(url_team)))
 
-def get_game_link(tag): # get the link to the game
-    tag_link = tag.find_all_next('td', {"data-stat": 'score'})[0]
-    # return the link
-    return "https://fbref.com/" + str(tag_link.find_all_next('a')[0].get('href'))   
+def get_game_link(tag, game_row): # get the link to the game
+    
+    tag_link = tag.find_all_next('td', {"data-stat": 'score'})[game_row]
+    
+    if tag_link.text == "":
+        return 0
+    else:
+        # return the link
+        return "https://fbref.com/" + str(tag_link.find_all_next('a')[0].get('href'))   
 
-print(get_game_link(get_game_tag(url_team)))
+
+#print(get_game_link(get_game_tag(url_team), 419))
 
 
 
@@ -179,4 +215,4 @@ def check_html_tag_n(url, element, tag, team, row):
     # find the player stats table for the specific team
     caption_tag = team_stats_table(tags, team) 
     table_tag = caption_tag.findNext('tbody') 
-    
+
