@@ -39,35 +39,46 @@ def check_html_tag(url, element, tag, team, row):
     
     # find the player stats table for the specific team
     caption_tag = team_stats_table(tags, team) 
+    print(caption_tag)
     table_tag = caption_tag.findNext('tbody') 
 
     player = table_tag.findChildren("tr")
     player = player[row:row+1]
     
+
     n_players = n_rows(player) # find the number of players in the table of a team
     # go to the third row of children
+    
+    
 
     minutes = int(soup.select('td[data-stat="minutes"]')[row].text) # find the minutes of a player
-    name = soup.select('th[csk]')[row].get('csk') # find the name of a player
-
-    player_stats = soup.findAll("th", {"csk": name})
+    name = player[0].find('th').get('csk') # find the name of a player
+    minutes = int(player[0].find_all_next('td', {"data-stat": 'minutes'})[0].text) # find the minutes of a player
     
+    
+    
+    player_stats = soup.findAll("th", {"csk": name})
+    return player_stats
     if minutes < 75:
         # return the tag value of children
         return player_stats
         
     else:
         return 0
+
+
+
     
 
 url = 'https://fbref.com/en/matches/81074285/Hellas-Verona-Sassuolo-August-21-2021-Serie-A'
 
-player_stats = check_html_tag(url, 'caption', 'NONE', 'Hellas Verona', 0)
+player_stats = check_html_tag(url, 'caption', 'NONE', 'Sassuolo', 1)
 play_att_list = ['name', 'team', 'goals', 'assists', 'pens_made', 'pens_att', 'shots_total', 'shots_on_target', 'cards_yellow', 'cards_red', 'touches', 'pressures', 'tackles', 'interceptions', 'blocks', 'xg', 'npxg', 'xa', 'sca', 'gca', 'passes_completed', 'passes', 'passes_pct', 'progressive_passes', 'carries', 'progressive_carries', 'dribbles_completed', 'dribbles', 'passes_total_distance', 'passes_progressive_distance', 'passes_completed_short', 'passes_short', 'passes_pct_short', 'passes_medium', 'passes_pct_medium', 'passes_completed_medium', 'passes_completed_long', 'passes_long', 'passes_pct_long', 'assisted_shots', 'passes_into_final_third', 'passes_into_penalty_area', 'crosses_into_penalty_area', 'passes_live', 'passes_dead', 'passes_free_kicks', 'through_balls', 'passes_pressure', 'passes_switches', 'crosses', 'corner_kicks', 'corner_kicks_in', 'corner_kicks_out', 'corner_kicks_straight', 'passes_ground', 'passes_low', 'passes_high', 'passes_left_foot', 'passes_right_foot', 'passes_head', 'throw_ins', 'passes_offsides', 'passes_oob', 'passes_intercepted', 'passes_blocked', 'tackles_won', 'tackles_def_3rd', 'tackles_mid_3rd', 'tackles_att_3rd', 'dribble_tackles', 'dribbles_vs', 'dribble_tackles_pct', 'dribbled_past', 'pressure_regains', 'pressure_regain_pct', 'pressures_def_3rd', 'pressures_mid_3rd', 'pressures_att_3rd', 'blocked_shots', 'blocked_shots_saves', 'blocked_passes', 'tackles_interceptions', 'clearances', 'errors', 'touches_def_pen_area', 'touches_def_3rd', 'touches_mid_3rd', 'touches_att_3rd', 'touches_att_pen_area', 'touches_live_ball', 'dribbles_completed_pct', 'players_dribbled_past', 'nutmegs', 'carry_distance', 'carry_progressive_distance', 'carries_into_final_third', 'carries_into_penalty_area', 'miscontrols', 'dispossessed', 'pass_targets', 'passes_received', 'passes_received_pct', 'progressive_passes_received', 'cards_yellow_red', 'fouls', 'fouled', 'offsides', 'pens_won', 'pens_conceded', 'own_goals', 'ball_recoveries', 'aerials_won', 'aerials_lost', 'aerials_won_pct']
-
 # make a function that removes every double and single quotation mark from the string and backslashes from the string
 
 def add_object(stats_tag, list): 
+    if stats_tag == 0:
+        return 0
     for stat in stats_tag:
         # make an object from webscrape.py
         raw_stats = stat.parent
@@ -75,11 +86,11 @@ def add_object(stats_tag, list):
         p1 = obj.Player(name)
         print(p1.name)
         break
-        
+    templist = list
     
-    for stat_tag in stats_tag:
-        raw_stats = stat_tag.parent
-        for att in reversed(list):
+    for tag in stats_tag:
+        raw_stats = tag.parent
+        for att in reversed(templist):
             if att in str(raw_stats):
                 att_stat = raw_stats.find_all_next('td', {"data-stat": att})[0].text
                 if att_stat == '':
@@ -90,8 +101,9 @@ def add_object(stats_tag, list):
                 print(att)
                 print(p1.att)
                 print('\n')
+                templist.remove(att)
 
-# add_object(player_stats, play_att_list)
+add_object(player_stats, play_att_list)
 
 url_team = 'https://fbref.com/en/comps/11/schedule/Serie-A-Scores-and-Fixtures'
 
@@ -156,11 +168,6 @@ print(get_game_link(get_game_tag(url_team)))
 
 
 
-
-
-
-
-
 # function that checks how many times a class of html tag with the tag value is found in the html
 def check_html_tag_n(url, element, tag, team, row):
     # get the html
@@ -173,4 +180,3 @@ def check_html_tag_n(url, element, tag, team, row):
     caption_tag = team_stats_table(tags, team) 
     table_tag = caption_tag.findNext('tbody') 
     
-

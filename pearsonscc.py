@@ -37,6 +37,6 @@ def pearson_correlation_coefficient(x, y):
     return r
 
 testx = [1, 2, 3, 4, 5]
-testy = [10, 9, 8, 7, 6]
+testy = [10, 9, 7, 7, 6]
 print(mean(testx))
 print(pearson_correlation_coefficient(testx, testy))
